@@ -1,0 +1,123 @@
+
+CREATE DATABASE bdRestaurante4
+;
+
+USE bdRestaurante4
+;
+
+CREATE TABLE tblAdministrador
+(
+	lIdAdmin INT IDENTITY PRIMARY KEY,
+	lCiAdmin VARCHAR(9) NOT NULL,
+	sNombreA VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE tblEmpleados
+(
+	lIdEmpleado INT IDENTITY PRIMARY KEY,
+	lIdAdmin INT NOT NULL,
+	sTurno VARCHAR(20) NOT NULL,
+	FOREIGN KEY (lIdAdmin) REFERENCES tblAdministrador(lIdAdmin)
+);
+
+CREATE TABLE tblMenus
+(
+	lIdMenu INT IDENTITY PRIMARY KEY,
+	sNombreComidas VARCHAR(30) NOT NULL,
+	lPrecioUnitario SMALLMONEY NOT NULL,
+	sDescripcion VARCHAR(100)
+);
+
+CREATE TABLE tblClientes
+(
+	lIdCliente INT IDENTITY PRIMARY KEY,
+	lIdAdmin INT NOT NULL,
+	sCi_Cli VARCHAR(9) NOT NULL,  
+	sNombreCli VARCHAR(20) NOT NULL,
+	sApellidoPaterno VARCHAR(20) NOT NULL,
+	FOREIGN KEY (lIdAdmin) REFERENCES tblAdministrador(lIdAdmin)
+);
+
+CREATE TABLE tblCuentas
+(
+	lIdCuenta INT IDENTITY PRIMARY KEY,
+	lIdCliente INT NOT NULL,
+	sUsuario VARCHAR(10) NOT NULL,
+	sContraseña VARCHAR(10) NOT NULL,
+	sTipoCuenta VARCHAR(10) NOT NULL,
+	FOREIGN KEY (lIdCliente) REFERENCES tblClientes(lIdCliente)
+);
+
+CREATE TABLE tblMesero
+(
+	lIdMesero INT IDENTITY PRIMARY KEY,
+	lIdEmpleado INT NOT NULL,
+	sCiMesero VARCHAR(9) NOT NULL,
+	sNombreMesero VARCHAR(20) NOT NULL,
+	lSueldo SMALLMONEY NOT NULL,
+	FOREIGN KEY (lIdEmpleado) REFERENCES tblEmpleados(lIdEmpleado)
+);
+
+CREATE TABLE tblCocineros
+(
+	lIdCocinero INT IDENTITY PRIMARY KEY,
+	lIdEmpleado INT NOT NULL,
+	sCi_Cocinero VARCHAR(9) NOT NULL,
+	sNombreCocinero VARCHAR(20) NOT NULL,
+	lSueldoCocinero SMALLMONEY NOT NULL,
+	FOREIGN KEY (lIdEmpleado) REFERENCES tblEmpleados(lIdEmpleado)
+);
+
+
+CREATE TABLE tblPedido
+(
+	lIdPedido INT IDENTITY PRIMARY KEY,
+	lIdMesero INT NOT NULL,
+	lIdCliente INT NOT NULL,
+	lCantidad_Platos INT NOT NULL,
+	sDescripcion_Pedido VARCHAR(50) NOT NULL,
+	FOREIGN KEY (lIdMesero) REFERENCES tblMesero (lIdMesero),
+	FOREIGN KEY (lIdCliente) REFERENCES tblClientes (lIdCliente)
+);
+
+CREATE TABLE tblDetalleVenta
+(
+	lIdVenta INT IDENTITY PRIMARY KEY,
+	lDescuento SMALLMONEY NOT NULL,
+	lCantidad_Platos2 INT NOT NULL,
+	lPrecio_Subtotal SMALLMONEY NOT NULL,
+	lPrecio_Total SMALLMONEY NOT NULL,
+	sDescripcion VARCHAR(50)
+);
+
+CREATE TABLE tblPedido_Venta
+(
+	lIdPedido INT,
+	lIdVenta INT,
+	PRIMARY KEY (lIdPedido, lIdVenta),
+	FOREIGN KEY (lIdPedido) REFERENCES tblPedido (lIdPedido),
+	FOREIGN KEY (lIdVenta) REFERENCES tblDetalleVenta (lIdVenta)
+);
+
+CREATE TABLE tblComidas
+(
+	lIdComida INT IDENTITY PRIMARY KEY,
+	lIdMenu INT NOT NULL,
+	lIdCocinero INT NOT NULL,
+	lIdPedido INT NOT NULL,
+	sNombreComida VARCHAR(20) NOT NULL,
+	lPrecio SMALLMONEY NOT NULL,
+	sDescripcionComida VARCHAR(50),
+	FOREIGN KEY (lIdMenu) REFERENCES tblMenus(lIdMenu),
+	FOREIGN KEY (lIdCocinero) REFERENCES tblCocineros(lIdCocinero),
+	FOREIGN KEY (lIdPedido) REFERENCES tblPedido(lIdPedido)
+);
+
+CREATE TABLE tblIngredientes
+(
+	lIdIngrediente INT IDENTITY PRIMARY KEY,
+	lIdComida INT NOT NULL,
+	sNombreIngr VARCHAR(20) NOT NULL,
+	FOREIGN KEY (lIdComida) REFERENCES tblComidas(lIdComida)
+);
+
